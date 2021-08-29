@@ -1,0 +1,113 @@
+Inheritance mappings.
+=====================
+
+---> please map all base and derived classes in hibernate.cfg.xml as we are using annotations.
+e.g. <mapping class="package.name.ClassName"/>
+ 
+
+TablePerHirarchy inheritance mappings.
+==========================================================================
+---> In this Type only one table will be generated for all hirarchy of classes. 
+---> this uses discriminator collumn to identify record is of which type. 
+---> we are defining default values for discriminator collumn to be inserted at time of record insertion.
+
+BaseClass Annotations.
+----------------------
+--->Class level annotations.
+@Entity
+@Table(name="MailUsers")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)  
+@DiscriminatorColumn(name="name_you_want_to_give_to_discriminator_collumn")  // this will be here only in base class.
+@DiscriminatorValue(value="this_value_will_be_inserted_on_insertion_of_every_record_for_this_class_object")
+
+--->annotations on primary key attribute.
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY) //or other strategy for identity generation.
+	int id;
+	
+--->annotations on other attributes.
+@Column(name="column_name)
+
+DerivedClass Annotations
+----------------------------
+---> class level annotations.
+@Entity
+@DiscriminatorValue(value="this_value_will_be_inserted_on_insertion_of_every_record_for_this_class_object")
+
+---> no primary key annotation as it will use base calss primary key.
+
+--->annotations on other attributes.
+@Column(name="column_name)
+
+
+
+
+TablePerClass inheritance mapping.
+==========================================================================
+---> In this type table will be generated for each class. i.e. for base class there will be a table. and derived classes will also have tables.
+---> This avoids nullable values as like in TablePerHirarchy inheritance mapping.
+---> problem with this strategy is , we are making completly new collumn's for parent class attributes. i.e. same collumn's for parent attributes 
+     will be available in all the tables.
+
+BaseClass annotations.
+-----------------------
+--->Class level annotations.
+@Inheritance(strategy=TABLE_PER_CLASS)
+@Entity
+@Table(name="table_name")
+
+--->annotations on primary key attribute.
+@Id
+@@GeneratedValue(strategy=GenerationType.AUTO)  //or other GenerationType
+--->annotations on other attributes.
+@Column(name="column_name)
+
+
+Derived Classes annotations.  (apply below annotations to all derived classes.)
+-----------------------
+---> Classl level Annotations.
+@Entity  
+@Table(name="table_name_for_this_class")  
+@AttributeOverrides(
+	@AttributeOverride(name="property_name_from_base_class" column=@column(name="column_name_for_the property")		
+	)
+	@AttributeOverride(name="property_name_from_base_class" column=@column(name="column_name_for_the property")		
+	) // simmilerly add all properties of base class here.
+)
+---> annotations on attributes. (no @Id attribute since we are inheriting id from base class)
+@Column(name="column_name") 
+
+
+Table Per Subclass inheritance mapping.
+==========================================================================
+---> in this strategy tables will be created for each classes.
+---> records will be joined using primary-key and foreign key relationship.
+---> this avoids duplicate collumn's as like in TablePerClass inheritance mapping.
+
+
+BaseClass annotations.
+-----------------------
+---> Class level annotations.
+@Entity  
+@Table(name = "table_name")  
+@Inheritance(strategy=InheritanceType.JOINED)    
+ 
+--->annotations on primary key attribute.
+@Id  
+@GeneratedValue(strategy=GenerationType.AUTO)  // or other id generation strategy      
+@Column(name = "primary_key_column_name")  
+
+--->annotations on other attributes.
+@Column(name="column_name)  
+
+Derived Classes annotations.  (apply below annotations to all derived classes.)
+-----------------------
+
+---> Class level annotations.
+@Entity  
+@Table(name="table_name_for_storing_derieved_class_attributes")  
+@PrimaryKeyJoinColumn(name="primary_key_column_name_from_base_class")  
+
+---> annotations on attributes. (no @Id attribute since we are inheriting id from base class)
+@Column(name="column_name") 
+

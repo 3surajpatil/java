@@ -1,0 +1,175 @@
+Mapping A Collection Element.
+======================================================
+
+---> to be putted below annotation on Collection Attribute like Set,List or Collection in your pojo class..
+ 
+@ElementCollection
+// not mandatory. if not used then hibernate will use attribute 'ClassName_attributeName' as a tableName. 
+// and classname_primary_key as foreign key for reference table.
+@JoinTable(name="tableName", joinColumns=@JoinColumn(name="collmn_name_tobe_given_for_primary_key") )
+
+---> in below example i have just used String as a List's type. we can add Userdefined Type as well . 
+---> below annotation is required when your collection element is of UserDefined Type. like 'Answer' class..
+
+@Embedable
+above class which is to be embedd. remaining annotations would be like @Column(name="..") on all attributes if required.
+
+example for Predefined List of Predefined Datatype String 
+----------------------------------
+
+Questions.java
+----------------
+@Entity
+@Table(name="questions")
+public class Question {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	int id;
+	
+	@Column(name="question")
+	String questionString;
+
+	@ElementCollection
+	@JoinTable(name="Answers",joinColumns=@JoinColumn(name="qid"))
+	List<String> answers=new ArrayList<String>();
+
+	... getters & setters.	
+	
+App.java
+---------
+
+		Session ses=sessionFactory.openSession();
+       
+       Question question=new Question();
+       question.setQuestionString("What is java");
+       
+       question.getAnswers().add("java is platform independent programming language.");
+       question.getAnswers().add("java is object oriented programming language");
+       
+       Transaction tx=ses.beginTransaction();
+       ses.save(question);
+       tx.commit();	
+	   
+	   
+example using UserDefined collection.
+-------------------------------------
+
+Answer.java (UserDefined datatype.)
+-------------
+
+
+@Embeddable
+public class Answer {
+
+	@Column(name="Answer")
+	String answerString;
+	@Column(name="answerBy")
+	String answerBy;
+	...
+	getters * setters.
+
+Question.java
+----------------
+	  
+@Entity
+@Table(name="questions")
+public class Question {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	int id;
+	
+	@Column(name="question")
+	String questionString;
+
+	@ElementCollection
+	@JoinTable(name="Answers",joinColumns=@JoinColumn(name="qid"))
+	List<Answer> answers=new ArrayList<Answer>();
+	
+
+App.java
+-----------
+
+ Session ses=sessionFactory.openSession();
+       
+       Question question=new Question();
+       question.setQuestionString("What is java");
+       
+       Answer answer=new Answer();      
+       answer.setAnswerBy("supath");
+       answer.setAnswerString("java is platform independent programming language.");
+       
+       
+       Answer answer1=new Answer(); 
+       answer1.setAnswerBy("suraj");
+       answer1.setAnswerString("java is object oriented programming language");
+       
+       question.getAnswers().add(answer);
+       question.getAnswers().add(answer1);
+       
+       Transaction tx=ses.beginTransaction();
+       ses.save(question);
+       tx.commit();
+
+Note:- here Answer.java is not mapped in hibernate.cfg.xml.
+
+
+example using Map collection.
+---------------------------------------------
+
+Question.java
+----------------
+
+
+@Entity
+@Table(name="questions")
+public class Question {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	int id;
+	
+	@Column(name="question")
+	String questionString;
+
+	@ElementCollection
+	@JoinTable(name="Answers",joinColumns=@JoinColumn(name="qid"))	
+	Map<String,String> answers=new HashMap<String,String>();
+	
+App.java
+-----------
+
+	Session ses=sessionFactory.openSession();
+       
+       Question question=new Question();
+       question.setQuestionString("What is java");       
+       
+       Map<String,String> answers=new HashMap<String,String>();
+       answers.put("suraj", "java is platform independent prog. language.");
+       answers.put("supath", "java is object oriented language.");             
+	   
+       question.setAnswers(answers);
+              
+       Transaction tx=ses.beginTransaction();
+       ses.save(question);
+       tx.commit();
+       
+	
+Note:- this stores map values correctly . but need to check for changing answer's column_name for key. 	
+	
+example for Predefined Set would be simmiler to ArrayList.
+-----------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+	   
