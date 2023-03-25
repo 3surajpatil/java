@@ -480,6 +480,67 @@ pom.xml
 </project>
 
 
+---> returning Model or ModelMap or ModelAndView object
+================================================================
+
+-->while handeling requests from request handeler methods. we are returning Model or ModelMap or ModelAndView object.
+below are the significances of each.
+
+in servlet technology we used to add attirbutes to request by req.setAttribute("--") and forward that to jsp/view page and those parameters were accessible from there
+by req.getAttribute("--");
+All These are serving for same purpose.
+
+Model
+-----
+To provide a view with usable data, we simply add this data to its Model object. Additionally, maps with attributes can be merged with Model instances:
+
+@GetMapping("/showViewPage")
+public String passParametersWithModel(Model model) {
+    Map<String, String> map = new HashMap<>();
+    map.put("spring", "mvc");
+    model.addAttribute("message", "Baeldung");
+    model.mergeAttributes(map);
+    return "viewPage";
+}
+
+
+ModelMap
+--------
+
+Just like the Model interface above, ModelMap is also used to pass values to render a view.
+
+The advantage of ModelMap is it gives us the ability to pass a collection of values and treat these values as if they were within a Map:
+
+@GetMapping("/printViewPage")
+public String passParametersWithModelMap(ModelMap map) {
+    map.addAttribute("welcomeMessage", "welcome");
+    map.addAttribute("message", "Baeldung");
+    return "viewPage";
+}
+
+
+
+
+ModelAndView
+--------------
+
+The final interface to pass values to a view is the ModelAndView. This interface allows us to pass all the information required by Spring MVC in one return:
+
+This interface allows us to pass all the information required by Spring MVC in one return
+
+@GetMapping("/goToViewPage")
+public ModelAndView passParametersWithModelAndView() {
+    ModelAndView modelAndView = new ModelAndView("viewPage");
+    modelAndView.addObject("message", "Baeldung");
+    return modelAndView;
+}
+
+
+
+
+
+
+
 
 Getting HttpSession in SpringMVC.
 ----------------------------------
@@ -520,6 +581,29 @@ Access the session variable in jsp using EL like this :
   return jsonResponse;
  }
 
+
+
+--> getting path parameters
+
+we have 2 approaches . 1) by using variable name for each parameter 2) making a map of the path parameters.
+
+	@RequestMapping(value="/{firstParam}/{secondParam}", method=RequestMethod.GET)
+	public String pathParamDemo(@PathVariable Map<String,String> pathParamsMap,HttpSession session,ModelMap modelMap)
+	{
+		//@PathVariable("firstParam")String firstParam we can get as many params as we want .
+		//alternatively we can write map as above.
+		String firstParam=pathParamsMap.get("firstParam");
+		String secondParam=secondParam=pathParamsMap.get("secondParam");
+		
+		modelMap.addAttribute("firstParam",firstParam);
+		modelMap.addAttribute("secondParam",secondParam);
+		return "index";
+	}
+---> getting request parameters. (i.e. params submitted by form.)
+
+same as path parameters here also we can get request parameters from the 
+1)@RequestParam("param_name") String param_name
+2)we can create a Map<String,String> 
 
 ---> content negotiation.
 
