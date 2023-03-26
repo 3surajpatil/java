@@ -1,11 +1,3 @@
-*.class
-# any eclipse project file.
-.eclipse
-.classpath
-.project
-.settings/
-
-target/
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
