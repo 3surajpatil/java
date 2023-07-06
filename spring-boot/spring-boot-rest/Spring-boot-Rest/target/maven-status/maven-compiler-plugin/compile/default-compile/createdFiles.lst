@@ -1,5 +1,0 @@
-org/harman/model/User.class
-org/harman/service/AuthenticationService.class
-org/harman/repository/UserRepository.class
-org/harman/controller/AuthenticationController.class
-org/harman/executor/SpringBootRestApplication.class
