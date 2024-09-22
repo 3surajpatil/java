@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sbdjar
+  namespace: devns
+spec:
+  hostNetwork: true
+  containers:
+  - name: sbdjar
+    image: springbootdemo:latest
+    #imagePullPolicy: Always
+    #imagePullPolicy: IfNotPresent
+    imagePullPolicy: Never
+    ports:
+    - containerPort: 8080
